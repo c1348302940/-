@@ -28,6 +28,7 @@ const TARGETS = [
   'lib/hotspot-context.js', 'tools/migrate-hotspot-user.js',
   'server.js', 'tools/verify-ui.js', 'tools/test-origin-security.mjs',
   'tools/test-refresh-policy.mjs',
+  'tools/test-shared-hotspots.js',
   'tools/test-vercel-state-bridge.js',
 ];
 

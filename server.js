@@ -158,7 +158,9 @@ async function workbenchState(auth, cloudState = null) {
   // 只有本机版才读取 SQLite 中的平台 Cookie 和采集结果。
   if (process.env.VERCEL === '1') return mergeLocalHotspotState(state, null, true);
   const userId = authenticatedUserId(auth);
-  return mergeLocalHotspotState(state, store.getState(userId));
+  const localState = store.getState(userId);
+  localState.trendItems = store.getSharedTrendItems();
+  return mergeLocalHotspotState(state, localState);
 }
 
 function spawnHotspot(cmd, platform, userId, keyword) {
