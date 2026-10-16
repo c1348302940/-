@@ -1,0 +1,25 @@
+project_id = "ty-marketing-workbench"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 17
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:8787"
+additional_redirect_urls = ["http://localhost:8787"]
+enable_signup = false
+
+[auth.sms]
+enable_signup = false
+enable_confirmations = false
+
+[realtime]
+enabled = true

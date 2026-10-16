@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>《天谕》手游营销工作台</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="app" class="app" aria-busy="true">
+    <div class="boot">正在连接营销工作台…</div>
+  </div>
+  <div id="modal-root"></div>
+  <div id="toast-root" class="toast-root"></div>
+  <script>
+    if (location.protocol === 'file:') {
+      location.replace('http://127.0.0.1:8787/');
+    }
+  </script>
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>

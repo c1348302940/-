@@ -1,0 +1,22 @@
+{
+  "name": "ty-marketing-workbench",
+  "version": "0.1.0",
+  "private": true,
+  "description": "《天谕》手游营销工作台 · 单机体验版",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node lib/seed.js --force",
+    "reset": "node lib/seed.js --reset",
+    "hotspot:login": "node lib/hotspot.js login",
+    "hotspot:collect": "node lib/hotspot.js collect"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.3",
+    "playwright": "^1.64.0"
+  },
+  "devDependencies": {
+    "supabase": "^2.121.0"
+  }
+}
