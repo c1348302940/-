@@ -1,7 +1,7 @@
-/* 热点雷达：采集结果团队共享，平台登录状态与常用板块按账号隔离 */
+/* 热点雷达：独立页面，抖音与小红书分开展示，仅连接体验者本人账号 */
 
 import { esc, ICON, toast, emptyState, nowStamp } from '../util.js';
-import { store, platformState, trendsOf, savedTopicsOf, loadState, mutate } from '../api.js';
+import { store, platformState, trendsOf, savedTopicsOf, currentUser, loadState, mutate } from '../api.js';
 import { authFetch } from '../auth.js';
 import { render as renderApp } from '../shell.js';
 
@@ -71,7 +71,7 @@ export function render() {
     <div class="page-head page-head-row">
       <div class="page-head">
         <h1 class="page-title">热点雷达</h1>
-        <p class="page-sub">从平台内容发现可迁移到游戏营销的灵感。热点内容由团队共享，不会自动变成工作任务。</p>
+        <p class="page-sub">从平台内容发现可迁移到游戏营销的灵感。热点仅供个人查看，不会自动变成工作任务。</p>
       </div>
       <div class="btn-row" style="padding-top:8px">
         <span class="status-chip ${status}"><i></i>${STATUS_TEXT[status] || status}${status === 'connected' && conn.connected_at ? ` · ${esc((conn.connected_at || '').slice(0, 10))}` : ''}</span>
@@ -92,7 +92,7 @@ export function render() {
         </button>`).join('')}
       </div>
       <span class="spacer"></span>
-        <span style="font-size:var(--fs-xs);color:var(--text-3)">团队共享热点 · 平台登录状态与个人收藏仅本人可见</span>
+        <span style="font-size:var(--fs-xs);color:var(--text-3)">${p === 'douyin' ? '公开热榜 · 个人收藏仅本人可见' : `${currentUser()?.name || ''} 的个人账号 · 仅本人可见`}</span>
     </div>
 
     ${statusBanner(status, conn, plat, busy)}
@@ -179,7 +179,7 @@ function statusBanner(status, conn, plat, busy) {
   }
   if (status === 'disconnected') {
     return `<div class="banner">${ICON.lock}
-      <span>尚未连接 ${plat.label} 账号。你仍可查看团队上次成功采集的内容；如需更新，请连接自己的账号。登录状态只保存在本机。</span>
+      <span>尚未连接 ${plat.label} 账号。连接后可在本页查看${plat.hotKind === 'hotlist' ? '你自己的热榜' : `你自己的${plat.label}内容（${plat.hotLabel}）`}，登录状态只保存在本机。</span>
       <span class="spacer"></span><button class="btn sm primary" data-act="hs-connect">连接${plat.label}账号</button></div>`;
   }
   return '';
@@ -242,7 +242,7 @@ function competitorBlock(status, conn) {
         ? emptyState(status === 'connecting' ? '等待登录确认' : '正在搜索竞品', status === 'connecting' ? '请在小红书窗口完成登录，然后点击上方「我已登录，开始搜索」。' : '将依次搜索五个竞品；整轮结束后才会关闭浏览器窗口。', '', 'radar')
       : status === 'error'
         ? emptyState('采集失败', `未能读取竞品玩家笔记（${esc((conn.status_detail || '').replace(/^采集失败[：:]\s*/, '') || '未知原因')}）。可点击重试。`, `<button class="btn sm" data-act="hs-refresh">重试</button>`, 'alert')
-        : emptyState('团队尚未取得竞品玩家笔记', '连接小红书账号并完成一次采集后，真实结果会共享给全部团队成员。', `<button class="btn sm primary" data-act="hs-connect">连接小红书账号</button>`, 'radar');
+        : emptyState('尚未取得竞品玩家笔记', '连接你自己的小红书账号后，这里会显示 5 个竞品的真实玩家笔记。未连接时不显示任何示例内容。', `<button class="btn sm primary" data-act="hs-connect">连接小红书账号</button>`, 'radar');
     return tabs + staleBanner + `<div class="card">${msg}</div>`;
   }
 
@@ -294,7 +294,7 @@ function listBlock(platform, status) {
           `已连接 ${cfg.label}，点击右上角「刷新${what}」读取当前${what}。`,
           `<button class="btn sm primary" data-act="hs-refresh">刷新${what}</button>`, 'radar')
       : emptyState(`尚未取得真实${what}数据`,
-          `连接${cfg.label}账号并完成一次采集后，这里会显示团队共享的真实${what}（${cfg.hotLabel}）。未连接时不显示任何示例话题。`,
+          `连接你自己的${cfg.label}账号后，这里会显示从平台读取的真实${what}（${cfg.hotLabel}）。未连接时不显示任何示例话题。`,
           `<button class="btn sm primary" data-act="hs-connect">连接${cfg.label}账号</button>`, 'radar');
     return chips + `<div class="card">${msg}</div>`;
   }
