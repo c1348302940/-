@@ -6,6 +6,7 @@ import { bindGlobalEvents, render } from './shell.js';
 import { toast } from './util.js';
 import { bootstrapStatus, currentProfile } from './auth.js';
 import { renderLogin, renderSetup } from './pages/login.js';
+import { startAutoRefresh } from './refresh.js';
 
 /* 任何数据变更后自动重绘（重绘在同一帧内合并） */
 setStateListener(render);
@@ -70,6 +71,7 @@ async function boot() {
       document.getElementById('app').className = 'app';
       await loadState();
       render();
+      startAutoRefresh();
     };
     if (status.needsBootstrap) {
       renderSetup(async () => renderLogin(activate));

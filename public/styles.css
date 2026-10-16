@@ -248,6 +248,8 @@ svg { flex: none; }
 }
 .tab-add:hover { background: var(--sidebar-accent); color: var(--text); }
 .tabbar-right { flex: none; display: flex; align-items: center; gap: 8px; padding: 0 8px 6px; }
+.topbar-sync { color: var(--text-3); }
+.topbar-sync svg { width: 16px; height: 16px; }
 
 /* 悬浮白色内容卡片 */
 .main-body { flex: 1; min-height: 0; padding: 0 12px 12px 0; background: var(--sidebar-bg); }

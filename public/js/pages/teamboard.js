@@ -180,7 +180,6 @@ export function render({ embedded = false } = {}) {
   <div class="team-footnote">完成率按“已完成任务 / 全部任务”计算；步骤进度另行显示。没有步骤的任务不会记为 0% 进度。任务和步骤均由执行人更新，主营在此只读查看。</div>`;
 }
 
-let pollTimer = null;
 export function afterRender() {
   const root = document.getElementById('page-root');
   if (store.ui.teamVizView === '3d' && root) {
@@ -191,15 +190,6 @@ export function afterRender() {
       onYaw(value) { store.ui.teamVizYaw = value; },
     });
   }
-  if (pollTimer || !isAdmin()) return;
-  pollTimer = setInterval(async () => {
-    if (store.ui.page !== 'admin' || store.ui.adminSection !== 'team' || !isAdmin()) {
-      clearInterval(pollTimer);
-      pollTimer = null;
-      return;
-    }
-    try { await loadState(); } catch (_) { /* 保留现有数据，可手动刷新重试 */ }
-  }, 30000);
 }
 
 export const actions = {

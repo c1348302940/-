@@ -4,6 +4,7 @@ import { esc, ICON, initials, toast } from './util.js';
 import { store, currentUser, isAdmin, currentUserId, mutate, loadState, reminders, navBadge } from './api.js';
 import { closeMenu, closeModal } from './ui.js';
 import { signOut } from './auth.js';
+import { refreshWorkbench } from './refresh.js';
 
 import * as dashboard from './pages/dashboard.js';
 import * as mywork from './pages/mywork.js';
@@ -158,6 +159,7 @@ function tabbarHtml() {
       <button class="tab-add" title="打开页面" data-act="tab-add">${ICON.plus}</button>
     </div>
     <div class="tabbar-right">
+      <button class="btn sm ghost topbar-sync" data-act="refresh-data" title="更新最新数据（每 10 分钟自动同步）">${ICON.refresh}<span>刷新</span></button>
       ${store.loading ? `<span class="loading"><span class="spin"></span>保存中…</span>` : ''}
     </div>
   </div>`;
@@ -207,6 +209,10 @@ const GLOBAL_ACTIONS = {
   'sign-out'() {
     signOut();
     location.reload();
+  },
+
+  async 'refresh-data'() {
+    await refreshWorkbench({ manual: true });
   },
 
   'close-modal'() { closeModal(); },

@@ -17,6 +17,7 @@ const ROOT = path.join(__dirname, '..');
 const TARGETS = [
   'public/js/main.js', 'public/js/api.js', 'public/js/util.js',
   'public/js/batch-ops.js', 'public/js/batch-content.js',
+  'public/js/refresh-policy.js', 'public/js/refresh.js',
   'public/js/team-progress-model.js', 'public/js/team-progress-view.js',
   'public/js/ui.js', 'public/js/shell.js',
   'public/js/pages/dashboard.js', 'public/js/pages/mywork.js',
@@ -26,6 +27,7 @@ const TARGETS = [
   'lib/db.js', 'lib/store.js', 'lib/seed.js', 'lib/hotspot.js',
   'lib/hotspot-context.js', 'tools/migrate-hotspot-user.js',
   'server.js', 'tools/verify-ui.js', 'tools/test-origin-security.mjs',
+  'tools/test-refresh-policy.mjs',
   'tools/test-vercel-state-bridge.js',
 ];
 
