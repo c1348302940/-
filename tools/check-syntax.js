@@ -25,7 +25,7 @@ const TARGETS = [
   'public/js/pages/admin.js', 'public/js/pages/teamboard.js',
   'lib/db.js', 'lib/store.js', 'lib/seed.js', 'lib/hotspot.js',
   'lib/hotspot-context.js', 'tools/migrate-hotspot-user.js',
-  'server.js', 'tools/verify-ui.js',
+  'server.js', 'tools/verify-ui.js', 'tools/test-origin-security.mjs',
 ];
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ty-syntax-'));
@@ -34,7 +34,7 @@ let bad = 0;
 for (const rel of TARGETS) {
   const src = path.join(ROOT, rel);
   if (!fs.existsSync(src)) { console.log(`跳过（不存在） ${rel}`); continue; }
-  const isEsm = src.includes(`${path.sep}public${path.sep}`);
+  const isEsm = src.includes(`${path.sep}public${path.sep}`) || src.endsWith('.mjs');
   const dst = path.join(tmp, rel.replace(/[\\/]/g, '_') + (isEsm ? '.mjs' : '.cjs'));
   fs.copyFileSync(src, dst);
   try {

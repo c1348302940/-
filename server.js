@@ -91,7 +91,9 @@ function sendJSON(res, code, obj) {
 /*     使跨站表单无法构造写请求。                                       */
 /* ------------------------------------------------------------------ */
 
-const ALLOWED_HOSTS = new Set(['127.0.0.1', 'localhost', '[::1]', '::1']);
+function firstForwardedValue(value) {
+  return String(value || '').split(',')[0].trim().toLowerCase();
+}
 
 function originAllowed(req) {
   const raw = req.headers.origin || req.headers.referer;
@@ -101,8 +103,14 @@ function originAllowed(req) {
     return true;
   }
   try {
-    const u = new URL(raw);
-    return ALLOWED_HOSTS.has(u.hostname) && Number(u.port || 80) === PORT;
+    const source = new URL(raw);
+    const requestHost = firstForwardedValue(req.headers['x-forwarded-host'] || req.headers.host);
+    if (!requestHost || source.host.toLowerCase() !== requestHost) return false;
+
+    const forwardedProtocol = firstForwardedValue(req.headers['x-forwarded-proto']);
+    if (forwardedProtocol && source.protocol.toLowerCase() !== `${forwardedProtocol}:`) return false;
+
+    return source.protocol === 'http:' || source.protocol === 'https:';
   } catch (_) {
     return false;
   }
