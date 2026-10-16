@@ -153,8 +153,11 @@ const collecting = new Set();
 function hotspotKey(platform, userId) { return `${userId}:${platform}`; }
 
 async function workbenchState(auth, cloudState = null) {
-  const userId = authenticatedUserId(auth);
   const state = cloudState || await supabaseStore.getState(auth);
+  // Vercel 的函数目录是只读的，线上状态完全来自 Supabase。
+  // 只有本机版才读取 SQLite 中的平台 Cookie 和采集结果。
+  if (process.env.VERCEL === '1') return mergeLocalHotspotState(state, null, true);
+  const userId = authenticatedUserId(auth);
   return mergeLocalHotspotState(state, store.getState(userId));
 }
 

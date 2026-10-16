@@ -26,6 +26,7 @@ const TARGETS = [
   'lib/db.js', 'lib/store.js', 'lib/seed.js', 'lib/hotspot.js',
   'lib/hotspot-context.js', 'tools/migrate-hotspot-user.js',
   'server.js', 'tools/verify-ui.js', 'tools/test-origin-security.mjs',
+  'tools/test-vercel-state-bridge.js',
 ];
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ty-syntax-'));
