@@ -19,6 +19,7 @@ const supabaseAuth = require('./lib/supabase');
 const accountAdmin = require('./lib/account-admin');
 const supabaseStore = require('./lib/supabase-store');
 const { authenticatedUserId, mergeLocalHotspotState } = require('./lib/hotspot-context');
+const { syncTrendItems } = require('./lib/hotspot-sync');
 
 const PORT = Number(process.env.PORT || 8787);
 const HOST = process.env.HOST || '127.0.0.1';
@@ -161,7 +162,7 @@ async function workbenchState(auth, cloudState = null) {
   return mergeLocalHotspotState(state, store.getState(userId));
 }
 
-function spawnHotspot(cmd, platform, userId, keyword) {
+function spawnHotspot(cmd, platform, userId, teamId, keyword) {
   const key = hotspotKey(platform, userId);
   if (cmd === 'collect') {
     if (collecting.has(key)) return null;
@@ -191,6 +192,9 @@ function spawnHotspot(cmd, platform, userId, keyword) {
           status: 'error', statusDetail: '浏览器任务异常结束，请重新连接后重试。',
         }, userId);
       }
+    }
+    if (code === 0 && cmd === 'collect' && teamId) {
+      syncTrendItems(teamId, userId, platform).catch((e) => console.error('[hotspot sync]', e.message));
     }
     if (out.trim()) console.log(`[hotspot ${cmd} ${platform}] (exit ${code}) ${out.trim().slice(0, 500)}`);
   });
@@ -340,7 +344,7 @@ const server = http.createServer(async (req, res) => {
         statePath: hotspot.stateFile(userId, platform),
         statusDetail: '正在打开平台官方页面。请完成登录，再点击「我已登录，开始搜索」。',
       }, userId);
-      spawnHotspot('login', platform, userId);
+      spawnHotspot('login', platform, userId, auth.profile.team_id);
       sendJSON(res, 200, { ok: true, status: 'connecting', message: '已打开独立浏览器窗口，请在弹出的窗口完成登录。' });
       return;
     }
@@ -371,7 +375,7 @@ const server = http.createServer(async (req, res) => {
         statePath: hotspot.stateFile(userId, platform),
         statusDetail: platform === 'xiaohongshu' ? '已确认登录，正在同一窗口搜索五个竞品…' : '已确认登录，正在读取热榜…',
       }, userId);
-      spawnHotspot('collect', platform, userId);
+      spawnHotspot('collect', platform, userId, auth.profile.team_id);
       sendJSON(res, 200, { ok: true, status: 'refreshing' });
       return;
     }
@@ -391,7 +395,7 @@ const server = http.createServer(async (req, res) => {
         sendJSON(res, 409, { ok: false, error: '请先在登录窗口完成登录并点击「我已登录，开始搜索」。' });
         return;
       }
-      spawnHotspot('collect', platform, userId);
+      spawnHotspot('collect', platform, userId, auth.profile.team_id);
       sendJSON(res, 200, { ok: true, status: 'refreshing', message: '正在采集平台内容…' });
       return;
     }
